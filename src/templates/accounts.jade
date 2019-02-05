@@ -1,0 +1,75 @@
+script(type='text/template' data-template='accountitem')
+  tr
+    th ${name}
+    td ${iban}
+    td 
+      img(width='24', height='24', alt='${bank}', title='${bank}', src='${logo}')
+    td ${csvparser}
+    td ${scraper}
+    td
+      a.icon(href='#accounts/${id}')
+        i.fa.fa-pencil
+
+script(type='text/template' data-template='arguments')
+  tr
+    th ${name}
+    td 
+      input.input(type='text',name='arguments[${name}]',value='${val}')
+
+div#accountactions.columns
+  div.column
+    a.button.is-primary.is-pulled-right.modal-button(href='#accounts/new')
+      span.fa.fa-plus Add
+
+table.table
+  thead
+    tr
+      th Name
+      th IBAN
+      th Bank
+      th CSVParser
+      th Scraper
+      th Actions
+  tfoot
+    tr
+      th Name
+      th IBAN
+      th Bank
+      th CSVParser
+      th Scraper
+      th Actions
+  tbody#accounttablebody
+
+div#accountmodal.modal
+  div.modal-background
+  div.modal-card
+    form#accountform.flexform(data-bind='true')
+      header.modal-card-head
+        p.modal-card-title ${title}
+        a.delete.close(href='#accounts')
+      section.modal-card-body
+          label.label Name
+          p.control
+            input.input(type='text', name='name', required, value='${name}')
+          label.label IBAN
+          p.control
+            input.input(type='text', name='iban', required, value='${iban}')
+          label.label Bank
+          p.control
+            span.select
+              select#accountform-bank-id(name='bank_id', required)
+          label.label CSVParser
+          p.control
+            span.select
+              select#accountform-csvparser(name='csvparser', required)
+          label.label Scraper
+          p.control
+            span.select
+              select#accountform-webscraper(name='scraper')
+          p.control
+            span.label Arguments
+            table#accountform-webscraper-arguments
+          input.input(type='hidden',name='id',value='${id}')
+      footer.modal-card-foot
+        button.button.is-primary(type='submit') ${submit}
+        a.button.close(href='#accounts') Cancel

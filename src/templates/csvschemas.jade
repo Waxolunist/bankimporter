@@ -1,0 +1,68 @@
+script(type='text/template' data-template='csvitem')
+  tr
+    th ${name}
+    td ${description}
+    td
+      a.icon(href='#csvschemas/${id}')
+        i.fa.fa-pencil
+
+script(type='text/template' data-template='csvformaddrow')
+  tr
+    td 
+      input.input(type='text', name='fieldname[]', required, value='${name}')
+    td
+      select(name='fieldtype[]', required)
+        option(value='number') Number
+        option(value='text') Text
+        option(value='date') Date
+    td
+      input.input(type='text', name='fieldformat[]', value='${format}')
+    td
+      a.icon.deleterow.pull-right
+        i.fa.fa-minus
+
+div#csvactions.columns
+  div.column
+    a.button.is-primary.is-pulled-right.modal-button(href='#csvschemas/new')
+      span.fa.fa-plus Add
+      
+table.table
+  thead
+    tr
+      th Name
+      th Description
+      th Actions
+  tfoot
+    tr
+      th Name
+      th Description
+      th Actions
+  tbody#csvtablebody
+
+div#csvmodal.modal
+  div.modal-background
+  div.modal-card
+    form#csvform(data-bind='true')
+      header.modal-card-head
+        p.modal-card-title ${title}
+        a.delete.close(href='#csvschemas')
+      section.modal-card-body
+          label.label Name
+          p.control
+            input.input(type='text', name='name', required, value='${name}')
+          label.label Description
+          p.control
+            input.input(type='text', name='description', value='${description}')
+          table.table
+            thead
+              tr
+                th Name
+                th Type
+                th Format
+                th
+                  a#csvformaddrow.icon.pull-right
+                    i.fa.fa-plus(type='button')
+              tbody#csvformtablebody
+      footer.modal-card-foot
+        button.button.is-primary(type='submit') Add
+        a.button.close(href='#csvschemas') Cancel

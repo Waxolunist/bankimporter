@@ -1,0 +1,66 @@
+script(type='text/template' data-template='bankitem')
+  tr
+    td 
+      img(width='24', height='24', alt='${name} Logo', src='${logo}')
+    td ${name}
+    td
+      a.icon(href='#banks/${id}')
+        i.fa.fa-pencil
+
+script(type='text/template', data-template='bankedit')
+  label.label Name
+  p.control
+    input.input(type='text',name='name',required,value='${name}')
+  label.label Logo
+  p.control
+    img(width='24', height='24', alt='${name} Logo', src='${logo}')
+    input.input(type='file', name='logo', accept='.jpg,.png')
+  input.input(type='hidden',name='id',value='${id}')
+
+div#bankactions.columns
+  div.column
+    a.button.is-primary.is-pulled-right.modal-button(data-target='#bankaddmodal')
+      span.fa.fa-plus Add
+
+table.table
+  thead
+    tr
+      th Logo
+      th Name
+      th Actions
+  tfoot
+    tr
+      th Logo
+      th Name
+      th Actions
+  tbody#banktablebody
+
+div#bankaddmodal.modal
+  div.modal-background
+  div.modal-card
+    form#bankaddform
+      header.modal-card-head
+        p.modal-card-title Add Bank
+        button.delete.close(type='button')
+      section.modal-card-body
+          label.label Name
+          p.control
+            input.input(type='text',name='name',required)
+          label.label Logo
+          p.control
+            input.input(type='file', name='logo', accept='.jpg,.png', required)
+      footer.modal-card-foot
+        button.button.is-primary(type='submit') Add
+        button.button.close(type='button') Cancel
+
+div#bankeditmodal.modal
+  div.modal-background
+  div.modal-card
+    form#bankeditform
+      header.modal-card-head
+        p.modal-card-title Edit Bank
+        a.delete.close(href='#banks')
+      section#bankeditformbody.modal-card-body(data-bind='true')
+      footer.modal-card-foot
+        button.button.is-primary(type='submit') Update
+        a.button.close(href='#banks') Cancel

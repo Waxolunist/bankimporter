@@ -1,0 +1,50 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset='utf-8')
+    meta(name='viewport',content='width=device-width,initial-scale=1.0')
+    meta(name='prerender-status-code',content='{{meta.status || 200}}')
+    meta(name="theme-color", content="#ffffff")
+    title CSV Store
+    link(href='/css/csvstore.css', rel='stylesheet')
+  body
+    section.hero.is-primary
+      div.hero-body
+        div.container
+          h1.title
+            | YNAB csv exporttool
+          h2.subtitle
+            | Importing and exporting bankstatements
+    nav.navbar
+      div#nav-toggle.navbar-burger
+        span
+        span
+        span
+      div.navbar-menu 
+        div.navbar-end
+          a.navbar-item.is-tab.is-active(href='#home') Home
+          a.navbar-item.is-tab(href='#import') Imports
+          a.navbar-item.is-tab(href='#accounts') Accounts
+          a.navbar-item.is-tab(href='#banks') Banks
+    
+    section.section
+      .container
+        #home.content.main-content
+          include home.jade
+        #import.content.main-content
+          include import.jade
+        #accounts.content.main-content
+          include accounts.jade
+        #banks.content.main-content
+          include banks.jade
+        //#csvschemas.content.main-content
+          include csvschemas.jade
+    script(type='text/template' data-template='option')
+      option(value='${id}') ${name}
+    script(type='text/javascript',src='/js/jquery.js')
+    script(type='text/javascript',src='/js/signals.js')
+    script(type='text/javascript',src='/js/jquery.simplePagination.js')
+    script(type='text/javascript',src='/js/jquery.simpleTemplate.js')
+    script(type='text/javascript',src='/js/hasher.js')
+    script(type='text/javascript',src='/js/crossroads.js')
+    script(type='text/javascript',src='/js/bulma.js')

@@ -1,0 +1,10 @@
+{
+  "dev": {
+    "driver": "sqlite3",
+    "filename": "/home/chrste/.local/csv-dbdev.db"
+  },
+  "prod": {
+    "driver": "sqlite3",
+    "filename": "/home/chrste/.local/csv-prod.db"
+  }
+}

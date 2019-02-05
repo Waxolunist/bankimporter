@@ -1,0 +1,98 @@
+script(type='text/template' data-template='importitem')
+  tr
+    th ${importdate}
+    td ${name}
+    td ${date}
+    td.amount(data-amount='${amount}') ${amount}
+    td ${text}
+
+div#importactions.filter
+  div.is-flex(style='justify-content: flex-start;')
+    label.label Account:&nbsp;
+    p.control
+      span.select
+        select#account-filter(name='account', required)
+          option(selected) All
+  div.is-flex(style='justify-content: flex-end;')
+    a.button.is-primary.is-pulled-right.modal-button(data-target='#importmodal', style="margin-right: 1em")
+      span.fa.fa-plus Add
+    a.button.is-primary.is-pulled-right.modal-button(data-target='#exportmodal')
+      span.fa.fa-download Export
+
+nav#importtablepagination.pagination
+  a.pagination-previous Previous
+  a.pagination-next Next page
+  div.pagination-list
+
+table.table
+  thead#importtablehead
+    tr
+      th
+        a(data-sort='f.importdate') Importdate
+          i.fa
+      th 
+        a(data-sort='account') Account
+          i.fa
+      th 
+        a(data-sort='d.date') Date
+          i.fa
+      th 
+        a(data-sort='d.amount') Amount
+          i.fa
+      th 
+        a(data-sort='text') Text
+          i.fa
+  tfoot
+    tr
+      th Importdate
+      th Account
+      th Date
+      th Amount
+      th Text
+  tbody#importtablebody
+
+div#importmodal.modal
+  div.modal-background
+  div.modal-card
+    form#importform(name='importform')
+      header.modal-card-head
+        p.modal-card-title Import CSV
+        button.delete.close
+      section.modal-card-body
+          label.label Account
+          p.control
+            span.select
+              select#importform-accounts(name='account', required)
+          p.control
+            label.label.checkbox Automated Download
+              input(type='checkbox', name='autodownload')
+          label.label CSV File
+          p.control
+            input.input(type='file', name='csv', accept='.csv', required)
+      footer.modal-card-foot
+        button.button.is-primary(type='submit') Import
+        button.button.close Cancel
+
+div#exportmodal.modal
+  div.modal-background
+  div.modal-card
+    form#exportform(action='/api/export', method='get', target='exportdownload', name='exportform')
+      header.modal-card-head
+        p.modal-card-title Export CSV
+        button.delete.close
+      section.modal-card-body
+          label.label Account
+          p.control
+            span.select
+              select#exportform-accounts(name='account', required)
+          label.label Date from
+          p.control
+            input.input(type='date', name='datefrom', required)
+          label.label Date to
+          p.control
+            input.input(type='date', name='dateto', required)
+      footer.modal-card-foot
+        button.button.is-primary(type='submit') Export
+        button.button.close Cancel
+
+iframe(style='display: none', name='exportdownload')
