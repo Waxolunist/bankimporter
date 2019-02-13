@@ -200,6 +200,11 @@ router.get('/api/export', async(ctx, next) => {
     .then(function(result) {
       ctx.set('Content-disposition', 'attachment; filename=export-' + result[0]['Payee'] + '_' + moment().format('YYYY-MM-DD') + '.csv');
       ctx.set('Content-type', 'application/csv');
+
+      result.forEach(row => {
+          row['Memo'] = row['Memo'].replace(/(?:(?![\n\r])\s){2,}/g, ' ');
+      });
+
       var memStream = new memorystream();
       csv.write(result, {headers: true})
        .pipe(memStream);

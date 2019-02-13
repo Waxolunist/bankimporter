@@ -9,11 +9,17 @@ bank statement twice.
 
 You can define parsers and web scrapers for auto download.
 
+To start the application run `npm start`.
+
 # Working on the code
 
 ## Development
 
-For server development start `npm run watch`, for client side development start `npm run devbuild`.
+For server development start `npm run watch` and `gulp watch`, for client side development start `npm run devbuild`.
+
+## Building
+
+`npm run build`
 
 # TODO
 
