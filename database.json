@@ -5,6 +5,6 @@
   },
   "prod": {
     "driver": "sqlite3",
-    "filename": "/home/chrste/.local/csv-prod.db"
+    "filename": "~/Documents/Finanzen/ynab/csv-prod.db"
   }
 }
