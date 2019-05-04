@@ -107,6 +107,7 @@ jQuery(document).ready(function($) {
         $('html').removeClass('is-clipped');
         var modal = $(element).closest('.modal');
         modal.removeClass('is-active');
+        modal.find('.hideonclose').addClass('hidden');
     };
 
     // routes
@@ -263,9 +264,9 @@ jQuery(document).ready(function($) {
     // forms
     $('#importform').submit(function(e) {
         e.preventDefault();
+        $('#importform .error').addClass('hidden');
         var form = $(this)[0];
         var formData = new FormData(form);
-
         $.post({
             url: '/api/imports',
             data: formData,
@@ -275,6 +276,11 @@ jQuery(document).ready(function($) {
             closeModal(form);
             form.reset();
             importRoute();
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            $('#importform .error').removeClass('hidden');
+            console.error(textStatus);
+            console.error(errorThrown);
+            form.reset();
         });
     });
 

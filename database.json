@@ -1,10 +1,10 @@
 {
   "dev": {
     "driver": "sqlite3",
-    "filename": "/home/chrste/.local/csv-dbdev.db"
+    "filename": "/Users/csterzl/Documents/Finanzen/ynab/csv-dbdev.db"
   },
   "prod": {
     "driver": "sqlite3",
-    "filename": "~/Documents/Finanzen/ynab/csv-prod.db"
+    "filename": "/Users/csterzl/Documents/Finanzen/ynab/csv-prod.db"
   }
 }
