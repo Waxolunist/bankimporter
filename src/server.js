@@ -50,14 +50,14 @@ numeral.register('locale', 'de_at', {
     }
 });
 
-var hashRow = function (input) {
-  let cloned = { ... input };
-  delete cloned.file_id;
-  delete cloned.order;
-  return hash(cloned);
+var hashRow = function(input) {
+    let cloned = {...input };
+    delete cloned.file_id;
+    delete cloned.order;
+    return hash(cloned);
 };
 
-router.get('/api/imports', async (ctx, next) => {
+router.get('/api/imports', async(ctx, next) => {
     var arr = [];
     var query = ctx.request.query || {};
     var page = parseInt(query.page || 1);
@@ -67,32 +67,32 @@ router.get('/api/imports', async (ctx, next) => {
     if (page < 1) page = 1;
     var pageSize = parseInt(query.pageSize || 10);
     var countstmt = sql.select({ autoQuoteTableNames: false, autoQuoteFieldNames: false })
-          .from('importdata', 'd')
-          .field('count(*)', 'c')
-          .left_join('files', 'f', 'f.id = d.file_id')
-          .left_join('accounts', 'a', 'a.id = f.account_id');
+        .from('importdata', 'd')
+        .field('count(*)', 'c')
+        .left_join('files', 'f', 'f.id = d.file_id')
+        .left_join('accounts', 'a', 'a.id = f.account_id');
     var sqlstmt = sql.select({ autoQuoteTableNames: false, autoQuoteFieldNames: false })
-          .from('importdata', 'd')
-          .field('printf("%.2f", d.amount / 100.0)', 'amount')
-          .field('d.text1 || " " || d.text2 || " " || d.text3 || " " || d.text4 || " " || d.text5 || " " || d.text6', 'text')
-          .field('strftime("%Y-%m-%d", d.date, "localtime")', 'date')
-          .field('strftime("%Y-%m-%d", f.importdate, "localtime")', 'importdate')
-          .field('a.name')
-          .field('a.id', 'account')
-          .left_join('files', 'f', 'f.id = d.file_id')
-          .left_join('accounts', 'a', 'a.id = f.account_id')
-          .limit(pageSize)
-          .offset(pageSize * (page - 1));
-    if(typeof sort === 'string' && sort.length > 0) {
-      sqlstmt.order(sort, asc);
+        .from('importdata', 'd')
+        .field('printf("%.2f", d.amount / 100.0)', 'amount')
+        .field('d.text1 || " " || d.text2 || " " || d.text3 || " " || d.text4 || " " || d.text5 || " " || d.text6', 'text')
+        .field('strftime("%Y-%m-%d", d.date, "localtime")', 'date')
+        .field('strftime("%Y-%m-%d", f.importdate, "localtime")', 'importdate')
+        .field('a.name')
+        .field('a.id', 'account')
+        .left_join('files', 'f', 'f.id = d.file_id')
+        .left_join('accounts', 'a', 'a.id = f.account_id')
+        .limit(pageSize)
+        .offset(pageSize * (page - 1));
+    if (typeof sort === 'string' && sort.length > 0) {
+        sqlstmt.order(sort, asc);
     }
-    if(account && account !== 'all') {
-      sqlstmt.where('a.id = ?', account);
-      countstmt.where('a.id = ?', account);
+    if (account && account !== 'all') {
+        sqlstmt.where('a.id = ?', account);
+        countstmt.where('a.id = ?', account);
     }
     sqlstmt.order('f.importdate', false)
-          .order('f.id')
-          .order('d."order"');
+        .order('f.id')
+        .order('d."order"');
     var sqlstmtparam = sqlstmt.toParam();
     var countstmtparam = countstmt.toParam();
     //console.log(sqlstmtparam);
@@ -123,10 +123,12 @@ router.post('/api/imports', upload.single('csv'), async ctx => {
     var scraper = csvscrapers.find(function(element) {
         return element.id === account.scraper;
     });
-    if(ctx.req.body.autodownload && scraper) {
+    if (ctx.req.body.autodownload && scraper) {
         console.log('Start autodownload.');
         let downloader = new DL.PageDownloader();
-        var argsmapped = Object.assign({}, ...args.map(item => ({ [item.name]: item.value }) ));
+        var argsmapped = Object.assign({}, ...args.map(item => ({
+            [item.name]: item.value
+        })));
         argsmapped.filepattern = scraper.filepattern;
         file = await downloader.download(scraper.url, scraper.steps, argsmapped);
     }
@@ -156,20 +158,20 @@ router.post('/api/imports', upload.single('csv'), async ctx => {
                     }
                     firstline = false;
                 })
-                .on("end", async () => {
-                  if(importdataRows.length > 0) {
-                    var insertdatastmt = sql.insert({ autoQuoteTableNames: true, autoQuoteFieldNames: true })
-                      .into("importdata")
-                      .setFields(importdataRows[0]);
-                    importdataRows.forEach(function (row) {
-                      insertdatastmt.setFields(row);
-                      var insertdatastmtParams = insertdatastmt.toParam();
-                      db.run(insertdatastmtParams.text, insertdatastmtParams.values)
-                        .catch((err) => {
-                          console.log(err);
+                .on("end", async() => {
+                    if (importdataRows.length > 0) {
+                        var insertdatastmt = sql.insert({ autoQuoteTableNames: true, autoQuoteFieldNames: true })
+                            .into("importdata")
+                            .setFields(importdataRows[0]);
+                        importdataRows.forEach(function(row) {
+                            insertdatastmt.setFields(row);
+                            var insertdatastmtParams = insertdatastmt.toParam();
+                            db.run(insertdatastmtParams.text, insertdatastmtParams.values)
+                                .catch((err) => {
+                                    console.log(err);
+                                });
                         });
-                    });
-                  }
+                    }
                 });
 
             stream.pipe(csvStream);
@@ -177,8 +179,8 @@ router.post('/api/imports', upload.single('csv'), async ctx => {
     ctx.status = 200;
 });
 router.get('/api/export', async(ctx, next) => {
-  var query = ctx.request.query;
-  var sqlstmt = sql.select({ autoQuoteTableNames: false, autoQuoteFieldNames: false })
+    var query = ctx.request.query;
+    var sqlstmt = sql.select({ autoQuoteTableNames: false, autoQuoteFieldNames: false })
         .from('importdata', 'd')
         .field('strftime("%d/%m/%Y", d.date, "localtime")', 'Date')
         .field('a.name', 'Payee')
@@ -196,20 +198,20 @@ router.get('/api/export', async(ctx, next) => {
         .where('date(d.date, "localtime") >= date(?)', query.datefrom)
         .toParam();
 
-  await db.all(sqlstmt.text, sqlstmt.values)
-    .then(function(result) {
-      ctx.set('Content-disposition', 'attachment; filename=export-' + result[0]['Payee'] + '_' + moment().format('YYYY-MM-DD') + '.csv');
-      ctx.set('Content-type', 'application/csv');
+    await db.all(sqlstmt.text, sqlstmt.values)
+        .then(function(result) {
+            ctx.set('Content-disposition', 'attachment; filename=export-' + result[0]['Payee'] + '_' + moment().format('YYYY-MM-DD') + '.csv');
+            ctx.set('Content-type', 'application/csv');
 
-      result.forEach(row => {
-          row['Memo'] = row['Memo'].replace(/(?:(?![\n\r])\s){2,}/g, ' ');
-      });
+            result.forEach(row => {
+                row['Memo'] = row['Memo'].replace(/(?:(?![\n\r])\s){2,}/g, ' ');
+            });
 
-      var memStream = new memorystream();
-      csv.write(result, {headers: true})
-       .pipe(memStream);
-       ctx.body = memStream;
-  });
+            var memStream = new memorystream();
+            csv.write(result, { headers: true })
+                .pipe(memStream);
+            ctx.body = memStream;
+        });
 });
 router.get('/api/banks', async(ctx, next) => {
     const [banks] = await Promise.all([
@@ -249,7 +251,7 @@ router.post('/api/banks/:id', upload.single('logo'), async ctx => {
 });
 router.get('/api/accounts', async(ctx, next) => {
     const [accounts] = await Promise.all([
-        db.all('select a.id, a.name, a.iban, b.name as bank, b.logo, a.csvparser, a.scraper from accounts a left join banks b on a.bank_id = b.id')
+        db.all('select a.id, a.name, a.iban, b.name as bank, b.logo, a.csvparser, a.scraper, a.defaultpayee from accounts a left join banks b on a.bank_id = b.id')
     ]);
     ctx.body = accounts;
 });
@@ -262,6 +264,7 @@ router.get('/api/accounts/:id', async(ctx, next) => {
             bank_id: 0,
             csvparser: '',
             scraper: '',
+            defaultpayee: '',
             arguments: {}
         };
     } else {
@@ -294,9 +297,10 @@ router.post('/api/accounts', upload.none(), async ctx => {
         .set('bank_id', account.bank_id)
         .set('csvparser', account.csvparser)
         .set('scraper', account.scraper)
+        .set('defaultpayee', account.defaultpayee)
         .toParam();
     await db.run(insertstmt.text, insertstmt.values);
-    for(var a in account.arguments) {
+    for (var a in account.arguments) {
         var insertstmt = sql.insert()
             .into('arguments')
             .set('name', a.name)
@@ -316,14 +320,15 @@ router.post('/api/accounts/:id', upload.none(), async ctx => {
         .set('bank_id', account.bank_id)
         .set('csvparser', account.csvparser)
         .set('scraper', account.scraper)
+        .set('defaultpayee', account.defaultpayee)
         .where('id = ?', account.id).toParam();
     await db.run(updatestmt.text, updatestmt.values);
     var deletestmt = sql.delete()
         .from('arguments')
         .where('account_id = ?', account.id)
         .toParam();
-    await db.run(deletestmt.text, deletestmt.values);        
-    for(var a in account.arguments) {
+    await db.run(deletestmt.text, deletestmt.values);
+    for (var a in account.arguments) {
         var insertstmt = sql.insert()
             .into('arguments')
             .set('name', a)
@@ -396,6 +401,49 @@ router.post('/api/csv', upload.none(), async ctx => {
                 .toParam();
             await db.run(insertfieldsstmt.text, insertfieldsstmt.values);
         });
+    ctx.status = 200;
+});
+router.get('/api/categories', async(ctx, next) => {
+    const [categories] = await Promise.all([
+        db.all('SELECT * FROM categories')
+    ]);
+    ctx.body = categories;
+});
+router.get('/api/categories/:id', async(ctx, next) => {
+    const [category] = await Promise.all([
+        db.get('SELECT * FROM categories WHERE id = ?', ctx.params.id)
+    ]);
+    ctx.body = category;
+});
+router.post('/api/categories/:id', upload.none(), async ctx => {
+    var category = ctx.req.body;
+    var updatestmt = sql.update()
+        .table('categories')
+        .set('category', category.category)
+        .set('searchinput', category.searchinput)
+        .set('amounteval', category.amounteval)
+        .set('account_id', category.account)
+        .where('id = ?', category.id).toParam();
+    await db.run(updatestmt.text, updatestmt.values);
+    ctx.status = 200;
+});
+router.del('/api/categories/:id', async(ctx, next) => {
+    var deletestatement = sql.delete()
+        .from('categories')
+        .where('id = ?', ctx.params.id).toParam();
+    await db.run(deletestatement.text, deletestatement.values);
+    ctx.status = 200;
+});
+router.post('/api/categories', upload.none(), async ctx => {
+    var category = ctx.req.body;
+    var insertstmt = sql.insert()
+        .into('categories')
+        .set('category', category.category)
+        .set('searchinput', category.searchinput)
+        .set('amounteval', category.amounteval)
+        .set('account_id', category.account)
+        .toParam();
+    await db.run(insertstmt.text, insertstmt.values);
     ctx.status = 200;
 });
 

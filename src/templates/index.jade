@@ -26,6 +26,7 @@ html(lang="en")
           a.navbar-item.is-tab(href='#import') Imports
           a.navbar-item.is-tab(href='#accounts') Accounts
           a.navbar-item.is-tab(href='#banks') Banks
+          a.navbar-item.is-tab(href='#categories') Categories
     
     section.section
       .container
@@ -37,6 +38,8 @@ html(lang="en")
           include accounts.jade
         #banks.content.main-content
           include banks.jade
+        #categories.content.main-content
+          include categories.jade
         //#csvschemas.content.main-content
           include csvschemas.jade
     script(type='text/template' data-template='option')

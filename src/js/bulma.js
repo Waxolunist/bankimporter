@@ -31,12 +31,12 @@ jQuery(document).ready(function($) {
     // common directives
     var paginate = function(baseselector, query, currentPage, totalItems, totalPages) {
         if (typeof query === 'object') {
-            var queryString = toQuery($.extend(query, {page: ''}), true);
+            var queryString = toQuery($.extend(query, { page: '' }), true);
             hrefPrefix = queryString.split('page=')[0] + 'page=';
             hrefSuffix = queryString.split('page=')[1];
         } else {
-          hrefPrefix = query;
-          hrefSuffix = '';
+            hrefPrefix = query;
+            hrefSuffix = '';
         }
         $(baseselector + ' > .pagination-list').pagination({
             items: totalItems,
@@ -68,9 +68,9 @@ jQuery(document).ready(function($) {
             var datasort = el$.data('sort');
             if (queryobject.sort === datasort) {
                 if (queryobject.asc === undefined) {
-                  queryobject.asc = true;
+                    queryobject.asc = true;
                 } else {
-                  queryobject.asc = JSON.parse(queryobject.asc);
+                    queryobject.asc = JSON.parse(queryobject.asc);
                 }
                 queryobjectclone.asc = !queryobject.asc;
                 el$.attr('data-asc', !queryobject.asc);
@@ -113,7 +113,7 @@ jQuery(document).ready(function($) {
     // routes
     var importRoute = function(query) {
         var query = query || {};
-        query = $.extend({'import': undefined}, query);
+        query = $.extend({ 'import': undefined }, query);
         var page = query.page || 1;
         var queryParamstring = toQuery(query, false);
         $.getJSON('/api/imports?' + queryParamstring, function(data) {
@@ -141,6 +141,44 @@ jQuery(document).ready(function($) {
                 openModal('#bankeditmodal');
             });
         }
+    };
+
+    var categoriesRoute = function(id) {
+        $.getJSON('/api/categories', function(data) {
+            $('#categoriestablebody').applyTemplate('categoriesitem', data);
+        });
+        if (id) {
+            $.getJSON('/api/categories/' + id, function(data) {
+                if (id === 'new') {
+                    data = {};
+                    data.title = 'Add Category';
+                    data.submit = 'Add';
+                } else {
+                    data.title = 'Edit Category';
+                    data.submit = 'Update';
+                }
+                $('#categoriesmodal').bindData(data);
+                $.getJSON('/api/accounts', function(accounts) {
+                    $('#categoriesform-accounts').applyTemplate('option', [{}, ...accounts]);
+                    $('#categoriesform-accounts').val(data.account_id);
+                });
+                openModal('#categoriesmodal');
+            });
+        } else {
+            closeModal('#categoriesmodal');
+        }
+    };
+
+    var categoriesDeleteRoute = function(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: '/api/categories/' + id
+        }).done(function(data) {
+            hasher.setHash('categories');
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error(textStatus);
+            console.error(errorThrown);
+        });
     };
 
     var accountsRoute = function(id) {
@@ -232,6 +270,8 @@ jQuery(document).ready(function($) {
         crossroads.addRoute('csvschemas/:id:', csvschemaRoute);
         crossroads.addRoute('import', importRoute);
         crossroads.addRoute('import{?query}', importRoute);
+        crossroads.addRoute('categories/:id:', categoriesRoute);
+        crossroads.addRoute('categories/delete/:id:', categoriesDeleteRoute);
 
         crossroads.routed.add(console.log, console); //log all routes
         crossroads.routed.add(routed);
@@ -252,8 +292,8 @@ jQuery(document).ready(function($) {
 
     // init event handlers
     $toggle.click(function() {
-      toggleActive.apply($toggle);
-      toggleActive.apply($('.navbar-menu'));
+        toggleActive.apply($toggle);
+        toggleActive.apply($('.navbar-menu'));
     });
 
     $('.navbar-menu .navbar-item').click(function() {
@@ -285,7 +325,7 @@ jQuery(document).ready(function($) {
     });
 
     $('#importform input[name=autodownload]').change(function() {
-      $('#importform input[name=csv]').prop('disabled', this.checked);
+        $('#importform input[name=csv]').prop('disabled', this.checked);
     });
 
     $('#bankaddform').submit(function(e) {
@@ -355,6 +395,23 @@ jQuery(document).ready(function($) {
             closeModal(form);
             form.reset();
             hasher.setHash('accounts');
+        });
+    });
+
+    $('#categoriesform').submit(function(e) {
+        e.preventDefault();
+        var form = $(this)[0];
+        var formData = new FormData(form);
+
+        $.post({
+            url: '/api/categories/' + formData.get('id'),
+            data: formData,
+            processData: false,
+            contentType: false
+        }).done(function(data) {
+            closeModal(form);
+            form.reset();
+            hasher.setHash('categories');
         });
     });
 

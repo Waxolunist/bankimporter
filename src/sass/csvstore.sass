@@ -18,6 +18,10 @@ span.fa::before
 .flexform
   display: flex
   flex-direction: column
+  overflow: hidden
+
+.flexform .modal-card-body
+  overflow: auto
 
 .filter label
   display: flex
@@ -63,6 +67,9 @@ th > a[data-asc='true'] > i
 
 th > a[data-asc='false'] > i
   @extend .fa-arrow-down
+
+.fa-trash
+  color: red;
 
 .error
   background-color: red

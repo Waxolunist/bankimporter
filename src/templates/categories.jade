@@ -1,0 +1,56 @@
+script(type='text/template' data-template='categoriesitem')
+  tr
+    th ${category}
+    td ${searchinput}
+    td ${amounteval}
+    td
+      a.icon(href='#categories/${id}')
+        i.fa.fa-pencil
+      a.icon(href='#categories/delete/${id}')
+        i.fa.fa-trash
+
+div#categoriesactions.columns
+  div.column
+    a.button.is-primary.is-pulled-right.modal-button(href='#categories/new')
+      span.fa.fa-plus Add
+
+table.table
+  thead
+    tr
+      th Category
+      th Searchinput
+      th Amounteval
+      th Actions
+  tfoot
+    tr
+      th Category
+      th Searchinput
+      th Amounteval
+      th Actions
+  tbody#categoriestablebody
+
+div#categoriesmodal.modal
+  div.modal-background
+  div.modal-card
+    form#categoriesform.flexform(data-bind='true')
+      header.modal-card-head
+        p.modal-card-title ${title}
+        a.delete.close(href='#categories')
+      section.modal-card-body
+          label.label Category
+          p.control
+            input.input(type='text', name='category', required, value='${category}')
+          label.label Searchinput
+          p.control
+            input.input(type='text', name='searchinput', required, value='${searchinput}')
+          label.label Amounteval
+          p.control
+            input.input(type='text', name='amounteval', required, value='${amounteval}')
+          label.label Account
+          p.control
+            span.select
+              select#categoriesform-accounts(name='account', required)
+          input.input(type='hidden',name='id',value='${id}')
+      footer.modal-card-foot
+        button.button.is-primary(type='submit') ${submit}
+        a.button.close(href='#categories') Cancel
