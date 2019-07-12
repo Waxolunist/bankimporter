@@ -198,13 +198,24 @@ router.get('/api/export', async(ctx, next) => {
         .where('date(d.date, "localtime") >= date(?)', query.datefrom)
         .toParam();
 
+    const [categories] = await Promise.all([
+        db.all('SELECT * FROM categories where account_id = ? or account_id is null', query.account)
+    ]);
     await db.all(sqlstmt.text, sqlstmt.values)
         .then(function(result) {
             ctx.set('Content-disposition', 'attachment; filename=export-' + result[0]['Payee'] + '_' + moment().format('YYYY-MM-DD') + '.csv');
             ctx.set('Content-type', 'application/csv');
 
             result.forEach(row => {
-                row['Memo'] = row['Memo'].replace(/(?:(?![\n\r])\s){2,}/g, ' ');
+                row['Memo'] = row['Memo'].replace(/(?:(?![\n\r])\s){2,}/g, ' ').trim();
+                row.Category = (categories.find(category => {
+                    let retval = new RegExp(category.searchinput).test(row.Memo);
+                    if (retval && category.amounteval) {
+                        let evalexp = category.amounteval.replace(/\$a\$/, row.Outflow ||  row.Inflow);
+                        retval = eval(evalexp);
+                    }
+                    return retval;
+                }) ||  {}).category ||  '';
             });
 
             var memStream = new memorystream();

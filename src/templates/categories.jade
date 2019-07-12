@@ -43,13 +43,13 @@ div#categoriesmodal.modal
           label.label Searchinput
           p.control
             input.input(type='text', name='searchinput', required, value='${searchinput}')
-          label.label Amounteval
+          label.label Amounteval ($a$ for amount, only positive numbers)
           p.control
-            input.input(type='text', name='amounteval', required, value='${amounteval}')
+            input.input(type='text', name='amounteval', value='${amounteval}')
           label.label Account
           p.control
             span.select
-              select#categoriesform-accounts(name='account', required)
+              select#categoriesform-accounts(name='account')
           input.input(type='hidden',name='id',value='${id}')
       footer.modal-card-foot
         button.button.is-primary(type='submit') ${submit}
