@@ -183,7 +183,7 @@ router.get('/api/export', async(ctx, next) => {
     var sqlstmt = sql.select({ autoQuoteTableNames: false, autoQuoteFieldNames: false })
         .from('importdata', 'd')
         .field('strftime("%d/%m/%Y", d.date, "localtime")', 'Date')
-        .field('a.name', 'Payee')
+        .field('a.defaultpayee', 'Payee')
         .field('""', 'Category')
         .field('d.text1 || " " || d.text2 || " " || d.text3 || " " || d.text4 || " " || d.text5 || " " || d.text6', 'Memo')
         .field('case when amount < 0 then printf("%.2f", amount / -100.0) else "" end', 'Outflow')
@@ -199,7 +199,7 @@ router.get('/api/export', async(ctx, next) => {
         .toParam();
 
     const [categories] = await Promise.all([
-        db.all('SELECT * FROM categories where account_id = ? or account_id is null', query.account)
+        db.all('SELECT * FROM categories where account_id = ? or account_id = ""', query.account)
     ]);
     await db.all(sqlstmt.text, sqlstmt.values)
         .then(function(result) {
@@ -211,6 +211,7 @@ router.get('/api/export', async(ctx, next) => {
                 row.Category = (categories.find(category => {
                     let retval = new RegExp(category.searchinput).test(row.Memo);
                     if (retval && category.amounteval) {
+                        console.log(`Found category ${category.category}. Looking for amount ${category.amounteval}`);
                         let evalexp = category.amounteval.replace(/\$a\$/, row.Outflow ||  row.Inflow);
                         retval = eval(evalexp);
                     }
