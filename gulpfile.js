@@ -1,3 +1,4 @@
+const del = require("del");
 var sourcemaps = require('gulp-sourcemaps');
 var gulp = require('gulp');
 var babel = require('gulp-babel');
@@ -6,15 +7,13 @@ var jade = require('gulp-jade');
 var gzip = require('gulp-gzip');
 var uglify = require('gulp-uglify');
 var pump = require('pump');
-var clean = require('gulp-clean');
 var runSequence = require('run-sequence');
 var newer = require('gulp-newer');
 var merge = require('merge-stream');
 
-gulp.task('clean', function(cb) {
-    return pump(gulp.src('dist', { read: false }),
-        clean());
-});
+function clean() {
+    return del(['./dist/']);
+}
 
 gulp.task('sass', function() {
     return gulp.src('src/sass/csvstore.sass')
@@ -109,29 +108,26 @@ gulp.task('babel', function() {
     return merge(server, parsers, scrapers);
 });
 
-var watch = function() {
-    gulp.watch(['src/sass/csvstore.sass'], ['sass']);
-    gulp.watch(['src/templates/*.jade'], ['templates']);
-    gulp.watch(['src/js/*.js'], ['client-js']);
-    gulp.watch(['src/server.js', 'src/lib/parsers/*'], ['babel']);
-    gulp.watch(['src/lib/scrapers/*'], ['copy']);
-};
-
-gulp.task('set-production', function() {
-    env = 'production';
+gulp.task('watch', function(cb) {
+    gulp.watch(['src/sass/csvstore.sass'], gulp.series('sass'));
+    gulp.watch(['src/templates/*.jade'], gulp.series('templates'));
+    gulp.watch(['src/js/*.js'], gulp.series('client-js'));
+    gulp.watch(['src/server.js', 'src/lib/parsers/*'], gulp.series('babel'));
+    gulp.watch(['src/lib/scrapers/*'], gulp.series('copy'));
 });
 
-gulp.task('set-development', function() {
+gulp.task('set-production', function(cb) {
+     env = 'production';
+     cb();
+});
+
+gulp.task('set-development', function(cb) {
     env = 'development';
+    cb();
 });
 
-gulp.task('build', function(cb) {
-    runSequence('set-production', 'clean', ['sass', 'templates', 'fonts', 'client-js', 'babel', 'copy'], cb);
-});
+gulp.task('build', gulp.series('set-production', clean, 'sass', 'templates', 'fonts', 'client-js', 'babel', 'copy'));
+gulp.task('devbuild', gulp.series('set-development', clean, 'sass', 'templates', 'fonts', 'client-js', 'lit-html', 'babel', 'copy'));
 
-gulp.task('devbuild', function(cb) {
-    runSequence('set-development', 'clean', 'sass', 'templates', 'fonts', 'client-js', 'lit-html', 'babel', 'copy', cb);
-});
-
-gulp.task('default', ['build']);
-gulp.task('dev', ['devbuild'], watch);
+gulp.task('default', gulp.series('build'));
+gulp.task('dev', gulp.series('devbuild', 'watch'));
