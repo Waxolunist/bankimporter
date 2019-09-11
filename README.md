@@ -27,6 +27,10 @@ If errors occur during fsevents install execute first: `env TOUCH=/usr/bin/touch
 
 Install it globally with `npm install -g gulp-cli`
 
+### Puppeteer
+
+If npm install is called, puppeteer may not download chrome. For that execute manually `npm install puppeteer`.
+
 ## Development
 
 For server development start `npm run watch` and `gulp watch`, for client side development start `npm run devbuild`.
