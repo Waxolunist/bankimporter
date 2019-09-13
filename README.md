@@ -13,6 +13,24 @@ To start the application run `npm start`.
 
 # Working on the code
 
+## Begin
+
+### Install sqlite3
+
+*Mac:* `brew install sqlite3`
+
+`npm install`
+
+If errors occur during fsevents install execute first: `env TOUCH=/usr/bin/touch npm install fsevents`.
+
+### Install gulp-cli
+
+Install it globally with `npm install -g gulp-cli`
+
+### Puppeteer
+
+If npm install is called, puppeteer may not download chrome. For that execute manually `npm install puppeteer`.
+
 ## Development
 
 For server development start `npm run watch` and `gulp watch`, for client side development start `npm run devbuild`.
