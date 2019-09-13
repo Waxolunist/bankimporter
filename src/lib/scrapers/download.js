@@ -1,7 +1,7 @@
 class PromiseUtils {
 
     static delay(time) {
-        return new Promise(function (resolve) {
+        return new Promise(function(resolve) {
             setTimeout(resolve, time)
         });
     }
@@ -28,7 +28,7 @@ class PageUtils {
             if (frame)
                 fulfill(frame);
             else
-                p.once('frameattached', checkFrame);
+                p.on('framenavigated', checkFrame);
         }
     }
 }
@@ -105,9 +105,9 @@ class PageDownloader {
         }
         await this.close();
         let returnfile = this.files[0];
-        if(args.filepattern) {
+        if (args.filepattern) {
             returnfile = this.files.filter(f => {
-                return args.filepattern.exec(f); 
+                return args.filepattern.exec(f);
             })[0];
         }
         return new Promise(resolve => resolve(this._createFileObject(returnfile)));
@@ -180,4 +180,4 @@ class Step {
     }
 }
 
-module.exports = {Step: Step, PageDownloader: PageDownloader, PageUtils: PageUtils, PromiseUtils: PromiseUtils};
+module.exports = { Step: Step, PageDownloader: PageDownloader, PageUtils: PageUtils, PromiseUtils: PromiseUtils };

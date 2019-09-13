@@ -1,14 +1,13 @@
 import numeral from 'numeral';
 import moment from 'moment-timezone';
 
-export default
-{
+export default {
     id: 'BA-savings',
     name: 'Bank Austria (savings)',
     encoding: 'utf-8',
     ignoreFirstLine: true,
     parseFunction: function(data, number, fileId) {
-        numeral.locale('de_at');
+        //numeral.locale('de_at');
         //Datum;Valutadatum;Buchungstext;Betrag (EUR);
         return {
             file_id: fileId,
