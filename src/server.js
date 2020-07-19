@@ -35,7 +35,7 @@ db.open(dbmigrate.config.getCurrent().settings.filename, {
 
 numeral.register('locale', 'de_at', {
     delimiters: {
-        thousands: ' ',
+        thousands: '.',
         decimal: ','
     },
     abbreviations: {

@@ -5,7 +5,7 @@ export default
 {
     id: 'BA-simple',
     name: 'Bank Austria (simple)',
-    encoding: 'utf-8',
+    encoding: 'latin1',
     ignoreFirstLine: true,
     parseFunction: function(data, number, fileId) {
         numeral.locale('de_at');

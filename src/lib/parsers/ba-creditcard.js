@@ -4,7 +4,7 @@ import moment from 'moment-timezone';
 export default {
     id: 'BA-creditcard',
     name: 'Bank Austria (creditcard)',
-    encoding: 'utf-8',
+    encoding: 'latin1',
     ignoreFirstLine: true,
     parseFunction: function(data, number, fileId) {
         numeral.locale('de_at');
