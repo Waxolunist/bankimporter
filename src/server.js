@@ -49,6 +49,22 @@ numeral.register('locale', 'de_at', {
         symbol: '€'
     }
 });
+numeral.register('locale', 'de_de', {
+    delimiters: {
+        thousands: '',
+        decimal: '.'
+    },
+    abbreviations: {
+        thousand: 'k',
+        million: 'm',
+        billion: 'b',
+        trillion: 't'
+    },
+    ordinal: undefined,
+    currency: {
+        symbol: '€'
+    }
+});
 
 var hashRow = function(input) {
     let cloned = {...input };
@@ -443,7 +459,7 @@ router.del('/api/categories/:id', async(ctx, next) => {
     var deletestatement = sql.delete()
         .from('categories')
         .where('id = ?', ctx.params.id).toParam();
-    await db.run(deletestatement.text, deletestatement.values);
+    await db.run(deletestatement.text, deletestatement.values); 
     ctx.status = 200;
 });
 router.post('/api/categories', upload.none(), async ctx => {
