@@ -56,7 +56,7 @@
         "gulp-sourcemaps": "^2.6.4",
         "gulp-uglify": "^3.0.0",
         "hasher": "^1.2.0",
-        "jquery": "^3.4.1",
+        "jquery": "^3.5.0",
         "koa": "^2.5.0",
         "koa-bodyparser": "^4.2.0",
         "koa-mount": "^3.0.0",
