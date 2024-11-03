@@ -10,6 +10,8 @@ var pump = require('pump');
 var runSequence = require('run-sequence');
 var newer = require('gulp-newer');
 var merge = require('merge-stream');
+var sourcemaps = require('gulp-sourcemaps');
+
 
 function clean() {
     return del(['./dist/']);
@@ -88,22 +90,28 @@ gulp.task('copy', function(cb) {
 gulp.task('babel', function() {
     var server = gulp.src(['src/server.js'])
         .pipe(newer('dist'))
+        .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ["es2015", "stage-0"]
         }))
+        .pipe(sourcemaps.write('dist'))
         .pipe(gulp.dest('dist'));
 
     var parsers = gulp.src(['src/lib/parsers/*.js'])
         .pipe(newer('dist/lib/parsers'))
+        .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ["es2015", "stage-0"]
         }))
+        .pipe(sourcemaps.write('dist/lib/parsers'))
         .pipe(gulp.dest('dist/lib/parsers'));
     var scrapers = gulp.src(['src/lib/scrapers/*.js'])
         .pipe(newer('dist/lib/scrapers'))
+        .pipe(sourcemaps.init())
         .pipe(babel({
             presets: ["es2015", "stage-0"]
         }))
+        .pipe(sourcemaps.write('dist/lib/scrapers'))
         .pipe(gulp.dest('dist/lib/scrapers'));
     return merge(server, parsers, scrapers);
 });

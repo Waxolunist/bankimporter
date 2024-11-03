@@ -1,24 +1,24 @@
 import 'babel-polyfill';
+
+import DBMigrate from 'db-migrate';
+import DL from './lib/scrapers/download.js'
+import Datauri from 'datauri';
 import Koa from 'koa';
 import Router from 'koa-router';
-import multer from 'koa-multer';
-import serve from 'koa-static';
-import mount from 'koa-mount';
-import DBMigrate from 'db-migrate';
 import csv from 'fast-csv';
-import streamifier from 'streamifier';
-import db from 'sqlite';
-import Datauri from 'datauri';
-import sql from 'squel';
-import zippy from 'zippy';
-import numeral from 'numeral';
-import moment from 'moment-timezone';
-import streamBuffers from 'stream-buffers';
-import memorystream from 'memorystream';
-import hash from 'object-hash';
 import csvparsers from './lib/parsers';
 import csvscrapers from './lib/scrapers';
-import DL from './lib/scrapers/download.js'
+import db from 'sqlite';
+import hash from 'object-hash';
+import memorystream from 'memorystream';
+import moment from 'moment-timezone';
+import mount from 'koa-mount';
+import multer from 'koa-multer';
+import numeral from 'numeral';
+import serve from 'koa-static';
+import sql from 'squel';
+import streamifier from 'streamifier';
+import zippy from 'zippy';
 
 var app = new Koa();
 var router = new Router();
@@ -29,9 +29,18 @@ var datauri = new Datauri();
 
 var dbmigrate = DBMigrate.getInstance(true);
 dbmigrate.up();
+
 db.open(dbmigrate.config.getCurrent().settings.filename, {
     Promise
+}).then((dbConnection) => {
+    dbConnection.on('trace', (data) => {
+        console.log(`
+STMT start======
+${data}
+======STMT end`);
+    });
 });
+
 
 numeral.register('locale', 'de_at', {
     delimiters: {
@@ -106,9 +115,13 @@ router.get('/api/imports', async(ctx, next) => {
         sqlstmt.where('a.id = ?', account);
         countstmt.where('a.id = ?', account);
     }
+    sqlstmt.order('d.file_id', false)
+        .order('d."order"');
+    /*
     sqlstmt.order('f.importdate', false)
         .order('f.id')
         .order('d."order"');
+    */
     var sqlstmtparam = sqlstmt.toParam();
     var countstmtparam = countstmt.toParam();
     //console.log(sqlstmtparam);
@@ -223,7 +236,7 @@ router.get('/api/export', async(ctx, next) => {
             ctx.set('Content-type', 'application/csv');
 
             result.forEach(row => {
-                row['Memo'] = row['Memo'].replace(/(?:(?![\n\r])\s){2,}/g, ' ').trim();
+                row['Memo'] = (row['Memo'] || '').replace(/(?:(?![\n\r])\s){2,}/g, ' ').trim();
                 row.Category = (categories.find(category => {
                     let retval = new RegExp(category.searchinput).test(row.Memo);
                     if (retval && category.amounteval) {
@@ -329,13 +342,15 @@ router.post('/api/accounts', upload.none(), async ctx => {
         .toParam();
     await db.run(insertstmt.text, insertstmt.values);
     for (var a in account.arguments) {
-        var insertstmt = sql.insert()
-            .into('arguments')
-            .set('name', a.name)
-            .set('value', a.value)
-            .set('account_id', account.id)
-            .toParam();
-        await db.run(insertstmt.text, insertstmt.values);
+        if(a.name) {
+            var insertstmt = sql.insert()
+                .into('arguments')
+                .set('name', a.name)
+                .set('value', a.value)
+                .set('account_id', account.id)
+                .toParam();
+            await db.run(insertstmt.text, insertstmt.values);
+        }
     }
     ctx.status = 200;
 });
@@ -459,7 +474,7 @@ router.del('/api/categories/:id', async(ctx, next) => {
     var deletestatement = sql.delete()
         .from('categories')
         .where('id = ?', ctx.params.id).toParam();
-    await db.run(deletestatement.text, deletestatement.values); 
+    await db.run(deletestatement.text, deletestatement.values);
     ctx.status = 200;
 });
 router.post('/api/categories', upload.none(), async ctx => {

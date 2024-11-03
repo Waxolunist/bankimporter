@@ -1,5 +1,5 @@
-import numeral from 'numeral';
 import moment from 'moment-timezone';
+import numeral from 'numeral';
 
 export default
 {
@@ -9,11 +9,12 @@ export default
     ignoreFirstLine: true,
     parseFunction: function(data, number, fileId) {
         numeral.locale('de_at');
-        //Buchungsdatum;Valutadatum;Buchungstext ;Interne Notiz;
+        //EZ;Buchungsdatum;Valutadatum;Buchungstext;Interne Notiz;
         //Währung;Betrag;Belegdaten;Belegnummer;
-        //Auftraggebername-;Auftraggeberkonto;
-        //Auftraggeber BLZ;Empfängername;Empfängerkonto;
-        //Empfänger BLZ;Zahlungsgrund;
+        //Auftraggebername;Auftraggeberkonto;
+        //Auftraggeber BIC;Empfängername;Empfängerkonto;
+        //Empfänger BIC;Zahlungsgrund;
+        console.log(data);
         return {
             file_id: fileId,
             order: number,
