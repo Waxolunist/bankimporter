@@ -19,7 +19,7 @@ module.exports = {
                     var usernameInput = document.getElementsByName('LoginPortletFormID')[0];
                     usernameInput.value = username;
                     var passwordInput = document.getElementsByName('LoginPortletFormPassword')[0];
-                    passwordInput.value = password;
+                    passwordInput.value = password;  
                 }, args.username, args.password);
                 await page.$eval('form#loginForm', form => form.submit());
             }),
@@ -35,7 +35,7 @@ module.exports = {
                 await page.$eval('#wpt_tabs div:nth-child(2) > a', a => a.click());
             }, { delaybefore: 10000 }),
         /*
-        new DL.Step('Welcomepage', 
+        new DL.Step('Welcomepage',
         async function(browser, page, args) {
             let flash = await page.waitForSelector('#divOutputTextCustomerName', { visible: true });
             let flashMessage = await flash.getProperty('innerText');
