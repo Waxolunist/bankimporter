@@ -2,16 +2,15 @@ const del = require("del");
 var sourcemaps = require('gulp-sourcemaps');
 var gulp = require('gulp');
 var babel = require('gulp-babel');
-var sass = require('gulp-sass');
-var jade = require('gulp-jade');
+var sass = require('gulp-sass')(require('sass'));
+var pug = require('gulp-pug');
 var gzip = require('gulp-gzip');
 var uglify = require('gulp-uglify');
 var pump = require('pump');
-var runSequence = require('run-sequence');
 var newer = require('gulp-newer');
 var merge = require('merge-stream');
-var sourcemaps = require('gulp-sourcemaps');
 
+var env;
 
 function clean() {
     return del(['./dist/']);
@@ -22,13 +21,12 @@ gulp.task('sass', function() {
         .pipe(sourcemaps.init())
         .pipe(sass({ outputStyle: env === 'production' ? 'compressed' : '' }).on('error', sass.logError))
         .pipe(sourcemaps.write('.'))
-        //.pipe(gzip())
         .pipe(gulp.dest('dist/css'));
 });
 
 gulp.task('templates', function() {
     return gulp.src('src/templates/*.jade')
-        .pipe(jade({
+        .pipe(pug({
             locals: {}
         }))
         .pipe(gzip())
@@ -70,9 +68,6 @@ gulp.task('client-js', function(cb) {
             'node_modules/crossroads/dist/crossroads.js',
             'src/js/*.js'
         ]),
-        //sourcemaps.init(),
-        //uglify(),
-        //sourcemaps.write('.'),
         gzip(),
         gulp.dest('dist/js/')
     ], function(err) {
@@ -92,7 +87,7 @@ gulp.task('babel', function() {
         .pipe(newer('dist'))
         .pipe(sourcemaps.init())
         .pipe(babel({
-            presets: ["es2015", "stage-0"]
+            presets: [['@babel/preset-env', { targets: { node: '20' } }]]
         }))
         .pipe(sourcemaps.write('dist'))
         .pipe(gulp.dest('dist'));
@@ -101,18 +96,20 @@ gulp.task('babel', function() {
         .pipe(newer('dist/lib/parsers'))
         .pipe(sourcemaps.init())
         .pipe(babel({
-            presets: ["es2015", "stage-0"]
+            presets: [['@babel/preset-env', { targets: { node: '20' } }]]
         }))
         .pipe(sourcemaps.write('dist/lib/parsers'))
         .pipe(gulp.dest('dist/lib/parsers'));
+
     var scrapers = gulp.src(['src/lib/scrapers/*.js'])
         .pipe(newer('dist/lib/scrapers'))
         .pipe(sourcemaps.init())
         .pipe(babel({
-            presets: ["es2015", "stage-0"]
+            presets: [['@babel/preset-env', { targets: { node: '20' } }]]
         }))
         .pipe(sourcemaps.write('dist/lib/scrapers'))
         .pipe(gulp.dest('dist/lib/scrapers'));
+
     return merge(server, parsers, scrapers);
 });
 
@@ -125,8 +122,8 @@ gulp.task('watch', function(cb) {
 });
 
 gulp.task('set-production', function(cb) {
-     env = 'production';
-     cb();
+    env = 'production';
+    cb();
 });
 
 gulp.task('set-development', function(cb) {

@@ -1,5 +1,3 @@
-import 'babel-polyfill';
-
 import DBMigrate from 'db-migrate';
 import DL from './lib/scrapers/download.js'
 import Datauri from 'datauri';

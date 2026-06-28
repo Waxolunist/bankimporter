@@ -53,9 +53,10 @@ class PageDownloader {
             args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
         this.page = await this.browser.newPage();
-        await this.page._client.send('Page.setDownloadBehavior', {
+        const cdpSession = await this.page.createCDPSession();
+        await cdpSession.send('Page.setDownloadBehavior', {
             behavior: 'allow',
-            downloadPath: './downloads'
+            downloadPath: path.resolve('./downloads')
         });
         console.log('Prepared browser and page');
         this.page.on('response', (response) => {
